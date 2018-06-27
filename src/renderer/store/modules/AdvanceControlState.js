@@ -30,7 +30,8 @@ const state = {
       {
         id: 1,
         title: 'Subtitle',
-        redirection: false,
+        redirection: true,
+        redirectionDestination: 'SubtitlesMenu',
         animation: true,
         functionType: 'switch',
       },
@@ -49,6 +50,53 @@ const state = {
         redirectionDestination: 'MediaMenu',
         animation: false,
         functionType: null,
+      },
+    ],
+  },
+  SubtitlesMenu: {
+    MenuName: 'Subtitles',
+    Menu: [
+      {
+        id: 0,
+        title: 'Language',
+        redirection: true,
+        animation: true,
+        functionType: 'list',
+      },
+      {
+        id: 1,
+        title: 'Source',
+        redirection: true,
+        animation: true,
+        functionType: 'list',
+      },
+      {
+        id: 2,
+        title: 'Delay',
+        redirection: false,
+        animation: true,
+        functionType: 'plusMinus',
+      },
+      {
+        id: 3,
+        title: 'Size',
+        redirection: false,
+        animation: true,
+        functionType: 'slider',
+      },
+      {
+        id: 4,
+        title: 'Custom Style',
+        redirection: true,
+        animation: false,
+        functionType: null,
+      },
+      {
+        id: 5,
+        title: '2nd Subtitle',
+        redirection: true,
+        animation: true,
+        functionType: 'switch',
       },
     ],
   },
@@ -106,6 +154,7 @@ const getters = {
 
 const mutations = {
   InitialMenu(state) {
+    state.PreviousMenu = null;
     state.CurrentMenu = state.InitialMenu;
   },
   PreviousMenu(state) {
@@ -118,6 +167,10 @@ const mutations = {
   AudioMenu(state) {
     state.PreviousMenu = state.CurrentMenu;
     state.CurrentMenu = state.AudioMenu;
+  },
+  SubtitlesMenu(state) {
+    state.PreviousMenu = state.CurrentMenu;
+    state.CurrentMenu = state.SubtitlesMenu;
   },
 };
 

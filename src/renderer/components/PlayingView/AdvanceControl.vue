@@ -2,12 +2,12 @@
   <div :style="menuStyle">
     <div class="advanced"
       v-if="isAcitve">
+      <div class="menu-name"
+        v-if="currentMenu.MenuName != 'Setting'"
+        @mousedown.self="backToPreviousMenu">
+        {{ '<' + currentMenu.MenuName }}
+      </div>
       <div class="flex-container">
-        <div class="menu-name"
-          v-if="currentMenu.MenuName != 'Setting'"
-          @mousedown.self="backToPreviousMenu">
-          {{ '<' + currentMenu.MenuName }}
-        </div>
         <AdvanceControlMenuItem
           v-for="item in currentMenu.Menu"
           :key="item.id"
@@ -67,7 +67,8 @@ export default {
       this.$_fitMenuSize();
     },
     $_fitMenuSize() {
-      this.menuStyle.height = `${(this.currentMenu.Menu.length * 22) + 120}px`;
+      this.menuStyle.height = (this.currentMenu.MenuName === 'Setting') ?
+        `${(this.currentMenu.Menu.length * 22) + 120}px` : `${((this.currentMenu.Menu.length + 1) * 22) + 140}px`;
     },
   },
   computed: {
@@ -101,6 +102,9 @@ export default {
   }
 
   .flex-container {
+    position: absolute;
+    width: 100%;
+    bottom: 45px;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -108,7 +112,10 @@ export default {
   }
 
   .menu-name {
+    position: absolute;
+    width: 100%;
     background-color: white;
+    color: black;
   }
   .menu-name:hover {
     cursor: pointer;

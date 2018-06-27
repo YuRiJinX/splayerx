@@ -10,11 +10,12 @@
   <PlusMinusComponent v-if="item.functionType === 'plusMinus'"
     :direction="menuItemStyle.flexDirection"
     :functionality="item.functionality"/>
-  <SwitchComponent v-else-if="item.functionType === 'switch'"
+
+  <SliderComponent v-else-if="item.functionType === 'slider'"
     :direction="menuItemStyle.flexDirection"
     :functionality="item.functionality"/>
 
-  <SliderComponent v-else-if="item.functionType === 'slider'"
+  <SwitchComponent v-else-if="item.functionType === 'switch'"
     :direction="menuItemStyle.flexDirection"
     :functionality="item.functionality"/>
 
