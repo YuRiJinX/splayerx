@@ -7,22 +7,28 @@
   <div
     :style="titleStyle"
     class="title">{{ item.title }}</div>
-  <PlusMinusComponent v-if="item.functionality === 'plusMinus'"
-    :direction="menuItemStyle.flexDirection"/>
-  <SwitchComponent v-else-if="item.functionality === 'switch'"
-    :direction="menuItemStyle.flexDirection"/>
+  <PlusMinusComponent v-if="item.functionType === 'plusMinus'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
+  <SwitchComponent v-else-if="item.functionType === 'switch'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
 
-  <SliderComponent v-else-if="item.functionality === 'slider'"
-    :direction="menuItemStyle.flexDirection"/>
+  <SliderComponent v-else-if="item.functionType === 'slider'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
 
-  <PickerComponent v-else-if="item.functionality === 'selector'"
-    :direction="menuItemStyle.flexDirection"/>
+  <PickerComponent v-else-if="item.functionType === 'picker'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
 
-  <ListComponent v-else-if="item.functionality === 'list'"
-    :direction="menuItemStyle.flexDirection"/>
+  <ListComponent v-else-if="item.functionType === 'list'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
 
-  <InfoComponent v-else-if="item.functionality === 'info'"
-    :direction="menuItemStyle.flexDirection"/>
+  <InfoComponent v-else-if="item.functionType === 'info'"
+    :direction="menuItemStyle.flexDirection"
+    :functionality="item.functionality"/>
 
 </div>
 </template>;
@@ -49,7 +55,6 @@ export default {
   },
   data() {
     return {
-      currentFunctionality: '',
       menuItemStyle: {
         backgroundColor: '',
         fontSize: '16px',
@@ -60,83 +65,6 @@ export default {
       titleStyle: {
         order: 1,
       },
-      settingLevel: [
-        {
-          id: 0,
-          title: 'Speed',
-          functionality: 'plusMinus',
-        },
-        {
-          id: 1,
-          title: 'Subtitle',
-          functionality: 'switch',
-        },
-        {
-          id: 2,
-          title: 'Audio',
-        },
-        {
-          id: 3,
-          title: 'Media Info',
-        },
-      ],
-      subtitleLevel: [
-        {
-          id: 0,
-          title: 'Language',
-          functionality: 'plusMinus',
-        },
-        {
-          id: 1,
-          title: 'Source',
-          functionality: 'switch',
-        },
-        {
-          id: 2,
-          title: 'Delay',
-        },
-        {
-          id: 3,
-          title: 'Size',
-        },
-        {
-          id: 4,
-          title: 'CustomStyle',
-        },
-        {
-          id: 5,
-          title: '2nd Subtitle',
-        },
-      ],
-      audioLevel: [
-        {
-          id: 0,
-          title: 'Language',
-          functionality: '1x',
-        },
-        {
-          id: 1,
-          title: 'Source',
-          functionality: 'On',
-        },
-        {
-          id: 2,
-          title: 'Delay',
-        },
-        {
-          id: 3,
-          title: 'Size',
-        },
-        {
-          id: 4,
-          title: 'CustomStyle',
-        },
-        {
-          id: 5,
-          title: '2nd Subtitle',
-        },
-      ],
-      mediaInfoLevel: [],
     };
   },
   methods: {
@@ -150,20 +78,12 @@ export default {
     },
     onMenuItemMouseOver() {
       this.$_setItemBackground();
-      switch (this.item.title) {
-        case 'Speed':
-        case 'Subtitle':
-          this.titleStyle.height = '30%';
-          this.titleStyle.fontSize = '12px';
-          this.titleStyle.color = 'rgba(0, 0, 0, 1)';
-
-          this.menuItemStyle.flexDirection = 'column';
-          break;
-        case 'Audio':
-        case 'Media Info':
-          this.menuItemStyle.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-          break;
-        default: break;
+      if (this.item.animation) {
+        this.titleStyle.height = '30%';
+        this.titleStyle.fontSize = '12px';
+        this.titleStyle.color = 'rgba(0, 0, 0, 1)';
+        console.log('mouseover');
+        this.menuItemStyle.flexDirection = 'column';
       }
     },
     $_setItemBackground() {
@@ -172,27 +92,9 @@ export default {
     $_resetItemBackground() {
       this.menuItemStyle.backgroundColor = '';
     },
-    onSecondItemClick() {
-      console.log('itemclick');
-      switch (this.item.title) {
-        case 0:
-
-          break;
-        default: break;
-      }
-    },
     onMenuItemClick() {
-      console.log('menuclick');
-      switch (this.item.title) {
-        case 'Speed':
-          break;
-        case 'Audio':
-          this.$bus.$emit('changeMenuList', this.audioLevel);
-          break;
-        case 'Media Info':
-          this.$bus.$emit('changeMenuList', this.mediaInfoLevel);
-          break;
-        default: break;
+      if (this.item.redirection) {
+        this.$bus.$emit('changeMenuList', this.item.redirectionDestination);
       }
     },
   },
@@ -211,6 +113,5 @@ export default {
       transition: font-size 100ms;
     }
   }
-
 }
 </style>

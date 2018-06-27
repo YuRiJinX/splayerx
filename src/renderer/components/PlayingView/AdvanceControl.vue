@@ -1,10 +1,15 @@
 <template>
-  <div :style="menuStyleObject">
+  <div :style="menuStyle">
     <div class="advanced"
       v-if="isAcitve">
       <div class="flex-container">
+        <div class="menu-name"
+          v-if="currentMenu.MenuName != 'Setting'"
+          @mousedown.self="backToPreviousMenu">
+          {{ '<' + currentMenu.MenuName }}
+        </div>
         <AdvanceControlMenuItem
-          v-for="item in menuList"
+          v-for="item in currentMenu.Menu"
           :key="item.id"
           :item="item">
         </AdvanceControlMenuItem>
@@ -26,92 +31,53 @@ export default {
   },
   data() {
     return {
-      menuStyleObject: {
+      menuStyle: {
         position: 'absolute',
         bottom: '17px',
         right: '27px',
         width: '45px',
         height: '40px',
       },
-      menuList: [
-        {
-          id: 0,
-          title: 'Speed',
-          functionality: 'plusMinus',
-        },
-        {
-          id: 1,
-          title: 'Subtitle',
-          functionality: 'switch',
-        },
-        {
-          id: 2,
-          title: 'Audio',
-        },
-        {
-          id: 3,
-          title: 'Media Info',
-        },
-      ],
-      settingLevel: [
-        {
-          id: 0,
-          title: 'Speed',
-          functionality: 'plusMinus',
-        },
-        {
-          id: 1,
-          title: 'Subtitle',
-          functionality: 'switch',
-        },
-        {
-          id: 2,
-          title: 'Audio',
-        },
-        {
-          id: 3,
-          title: 'Media Info',
-        },
-      ],
       isAcitve: false,
     };
   },
   methods: {
-    onSecondItemClick() {
-      console.log('itemclick');
-    },
-    onMenuItemClick() {
-      console.log('menuclick');
-      console.log(this.$refs.menuList[0].key);
-    },
     switchSettingMenuState() {
       console.log('switching');
       if (this.isAcitve) {
-        this.menuList = this.settingLevel;
-        this.closeMenuSetting();
+        this.closeMenu();
       } else {
-        this.openMenuSetting();
+        this.$store.commit('InitialMenu');
+        console.log(this.currentMenu);
+        this.openMenu();
       }
     },
-    closeMenuSetting() {
-      this.menuStyleObject.width = `${45}px`;
-      this.menuStyleObject.height = `${40}px`;
-      this.menuList = this.settingLevel;
+    closeMenu() {
+      this.menuStyle.width = `${45}px`;
+      this.menuStyle.height = `${40}px`;
       this.isAcitve = false;
     },
-    openMenuSetting() {
-      this.menuStyleObject.width = `${208}px`;
+    openMenu() {
+      this.menuStyle.width = `${208}px`;
       this.$_fitMenuSize();
       this.isAcitve = true;
     },
+    backToPreviousMenu() {
+      this.$store.commit('PreviousMenu');
+      this.$_fitMenuSize();
+    },
     $_fitMenuSize() {
-      console.log(this.menuList.length);
-      this.menuStyleObject.height = `${(this.menuList.length * 22) + 120}px`;
+      this.menuStyle.height = `${(this.currentMenu.Menu.length * 22) + 120}px`;
+    },
+  },
+  computed: {
+    currentMenu() {
+      return this.$store.state.AdvanceControlState.CurrentMenu;
     },
   },
   created() {
     this.$bus.$on('changeMenuList', (changedLevel) => {
-      this.menuList = changedLevel;
+      this.$store.commit(changedLevel);
       this.$_fitMenuSize();
     });
   },
@@ -127,8 +93,8 @@ export default {
     width: 100%;
     height: 100%;
     background-color: white;
-    opacity: 0.3;
     backdrop-filter: blur(20px);
+    opacity: 0.3;
     color: black;
     border-radius: 4.8px;
     z-index: 750;
@@ -141,6 +107,12 @@ export default {
     justify-content: space-evenly;
   }
 
+  .menu-name {
+    background-color: white;
+  }
+  .menu-name:hover {
+    cursor: pointer;
+  }
   .button {
     position: absolute;
     bottom: 10px;

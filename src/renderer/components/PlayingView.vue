@@ -14,7 +14,7 @@
       <TimeProgressBar :src="uri" />
       <TheTimeCodes/>
       <VolumeControl/>
-      <!-- <AdvanceControl/> -->
+      <AdvanceControl/>
     </div>
   </div>
 </template>

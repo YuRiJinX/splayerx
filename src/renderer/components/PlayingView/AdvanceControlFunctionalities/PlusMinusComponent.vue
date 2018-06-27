@@ -7,7 +7,7 @@
         -
       </div>
       <div class="current-speed">
-        {{ playbackRate }}x
+        {{ number }}x
       </div>
       <div class="plus-button"
        @mousedown="onPlusButtonClick">
@@ -20,7 +20,7 @@
     </div>
     <div class="brief-info"
       v-else-if="direction === 'row'">
-      {{ playbackRate + 'x' }}
+      {{ number + 'x' }}
     </div>
   </div>
 </template>;
@@ -29,30 +29,25 @@
 export default {
   props: {
     direction: String,
+    functionality: null,
   },
   data() {
     return {
-      //
+      number: 1,
     };
   },
   methods: {
     onMinusButtonClick() {
-      if (this.playbackRate > 0) {
-        this.$store.commit('PlaybackRate', this.playbackRate - 0.1);
-      } else {
-        this.$store.commit('PlaybackRate', 0);
-      }
+      this.functionality('minus');
+      this.number = Math.round((this.number - 0.1) * 10) / 10;
     },
     onPlusButtonClick() {
-      this.$store.commit('PlaybackRate', this.playbackRate + 0.1);
+      this.functionality('plus');
+      this.number = Math.round((this.number + 0.1) * 10) / 10;
     },
     onResetButtonClick() {
-      this.$store.commit('PlaybackRate', 1);
-    },
-  },
-  computed: {
-    playbackRate() {
-      return Math.round(this.$store.state.PlaybackState.PlaybackRate * 10) / 10;
+      this.functionality('reset');
+      this.number = 1;
     },
   },
 };

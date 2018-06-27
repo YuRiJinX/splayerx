@@ -12,8 +12,14 @@ const getters = {
 };
 
 const mutations = {
-  PlaybackRate(state, t) {
-    state.PlaybackRate = t;
+  IncreasePlaybackRate(state) {
+    state.PlaybackRate += 0.1;
+  },
+  DecreasePlaybackRate(state) {
+    state.PlaybackRate -= 0.1;
+  },
+  ResetPlaybackRate(state) {
+    state.PlaybackRate = 1;
   },
   SrcOfVideo(state, t) {
     state.SrcOfVideo = t;
