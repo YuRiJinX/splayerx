@@ -50,6 +50,18 @@ export default {
       }
     },
     openFile(path) {
+      function indexOfExistedFileIn(data, path) {
+        for (let i = 0; i < data.length; i += 1) {
+          const object = data[i];
+          const iterator = Object.keys(object).indexOf('path');
+          if (iterator !== -1) {
+            if (object.path === path) {
+              return i;
+            }
+          }
+        }
+        return -1;
+      }
       // this.$storage.set('recent-played', []);
       this.$storage.get('recent-played', (err, data) => {
         console.log(data);
@@ -65,10 +77,10 @@ export default {
         } else if (Array.isArray(data)) {
           console.log('its an array!');
           if (data.length < 4) {
-            if (this.$_indexOfExistedFileIn(data, path) === -1) {
+            if (indexOfExistedFileIn(data, path) === -1) {
               data.unshift(newElement);
             } else {
-              const item = data.splice(this.$_indexOfExistedFileIn(data, path), 1);
+              const item = data.splice(indexOfExistedFileIn(data, path), 1);
               if (item[0].lastPlayedTime !== 0) {
                 this.$bus.$emit('seek', item[0].lastPlayedTime);
               }
@@ -78,11 +90,11 @@ export default {
             console.log(data);
             this.$storage.set('recent-played', data);
           } else {
-            if (this.$_indexOfExistedFileIn(data, path) === -1) {
+            if (indexOfExistedFileIn(data, path) === -1) {
               data.pop();
               data.unshift(newElement);
             } else {
-              const item = data.splice(this.$_indexOfExistedFileIn(data, path), 1);
+              const item = data.splice(indexOfExistedFileIn(data, path), 1);
               data.unshift(item[0]);
             }
             console.log('changed:');
@@ -97,18 +109,6 @@ export default {
       this.$router.push({
         name: 'playing-view',
       });
-    },
-    $_indexOfExistedFileIn(data, path) {
-      for (let i = 0; i < data.length; i += 1) {
-        const object = data[i];
-        const iterator = Object.keys(object).indexOf('path');
-        if (iterator !== -1) {
-          if (object.path === path) {
-            return i;
-          }
-        }
-      }
-      return -1;
     },
 
     mediaQuickHash(file) {
