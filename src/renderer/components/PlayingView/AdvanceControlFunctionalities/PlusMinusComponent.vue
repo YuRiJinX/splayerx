@@ -3,24 +3,24 @@
     <div class="functionality"
       v-if="direction === 'column'">
       <div class="minus-button"
-      @mousedown="onMinusButtonClick">
+      @mousedown="minus">
         -
       </div>
       <div class="current-speed">
-        {{ number }}x
+        {{ currentState }}x
       </div>
       <div class="plus-button"
-       @mousedown="onPlusButtonClick">
+       @mousedown="plus">
         +
       </div>
       <div class="reset-button"
-      @mousedown="onResetButtonClick">
+      @mousedown="reset">
         @
       </div>
     </div>
     <div class="brief-info"
       v-else-if="direction === 'row'">
-      {{ number + 'x' }}
+      {{ currentState + 'x' }}
     </div>
   </div>
 </template>;
@@ -33,21 +33,21 @@ export default {
   },
   data() {
     return {
-      number: 1,
+      currentState: 1,
     };
   },
   methods: {
-    onMinusButtonClick() {
+    minus() {
       this.functionality('minus');
-      this.number = Math.round((this.number - 0.1) * 10) / 10;
+      this.currentState = Math.round((this.currentState - 0.1) * 10) / 10;
     },
-    onPlusButtonClick() {
+    plus() {
       this.functionality('plus');
-      this.number = Math.round((this.number + 0.1) * 10) / 10;
+      this.currentState = Math.round((this.currentState + 0.1) * 10) / 10;
     },
-    onResetButtonClick() {
+    reset() {
       this.functionality('reset');
-      this.number = 1;
+      this.currentState = 1;
     },
   },
 };

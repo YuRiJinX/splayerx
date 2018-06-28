@@ -5,8 +5,7 @@
   @mouseover.stop="onMenuItemMouseOver"
   @mouseout.stop="resetAppearence">
   <div
-    :style="titleStyle"
-    class="title">{{ item.title }}</div>
+    :class="titleClassObject">{{ item.title }}</div>
   <PlusMinusComponent v-if="item.functionType === 'plusMinus'"
     :direction="menuItemStyle.flexDirection"
     :functionality="item.functionality"/>
@@ -27,9 +26,8 @@
     :direction="menuItemStyle.flexDirection"
     :functionality="item.functionality"/>
 
-  <InfoComponent v-else-if="item.functionType === 'info'"
-    :direction="menuItemStyle.flexDirection"
-    :functionality="item.functionality"/>
+  <InfoComponent v-else-if="item.functionType === 'Info'"
+    :value="item.value"/>
 
 </div>
 </template>;
@@ -57,41 +55,26 @@ export default {
   data() {
     return {
       menuItemStyle: {
-        backgroundColor: '',
-        fontSize: '16px',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderRadius: '4px',
       },
-      titleStyle: {
-        order: 1,
+      titleClassObject: {
+        title: true,
+        mouseover: false,
       },
     };
   },
   methods: {
     resetAppearence() {
-      this.$_resetItemBackground();
-      this.titleStyle.fontSize = '16px';
-      this.titleStyle.color = 'rgba(0,0,0,1)';
-      this.titleStyle.height = '100%';
-
+      this.titleClassObject.title = true;
+      this.titleClassObject.mouseover = false;
       this.menuItemStyle.flexDirection = 'row';
     },
     onMenuItemMouseOver() {
-      this.$_setItemBackground();
       if (this.item.animation) {
-        this.titleStyle.height = '30%';
-        this.titleStyle.fontSize = '12px';
-        this.titleStyle.color = 'rgba(0, 0, 0, 1)';
-        console.log('mouseover');
+        this.titleClassObject.title = false;
+        this.titleClassObject.mouseover = true;
         this.menuItemStyle.flexDirection = 'column';
       }
-    },
-    $_setItemBackground() {
-      this.menuItemStyle.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-    },
-    $_resetItemBackground() {
-      this.menuItemStyle.backgroundColor = '';
     },
     onMenuItemClick() {
       if (this.item.redirection) {
@@ -107,12 +90,28 @@ export default {
   .items {
     display: flex;
     height: 35px;
+    font-size: 16px;
+    justify-content: space-between;
+    border-radius: 4px;
 
     .title {
-      padding: 0;
+      order: 1;
+      font-size: 16px;
+      color: rgba(0,0,0,1);
+      height: 100%;
       cursor: default;
       transition: font-size 100ms;
     }
+    .mouseover {
+      height: 30%;
+      font-size: 12px;
+      color: rgba(0,0,0,1);
+      transition: font-size 100ms;
+    }
+  }
+  .items:hover {
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.3);
   }
 }
 </style>

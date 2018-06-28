@@ -3,11 +3,11 @@
     <div class="functionality"
       v-if="direction === 'column'">
       <div class="on-button"
-      @mousedown="currentState = true">
+      @mousedown="switchOn">
         On
       </div>
       <div class="off-button"
-       @mousedown="currentState = false">
+       @mousedown="switchOff">
         Off
       </div>
     </div>
@@ -22,11 +22,22 @@
 export default {
   props: {
     direction: String,
+    functionality: null,
   },
   data() {
     return {
       currentState: true,
     };
+  },
+  methods: {
+    switchOn() {
+      this.functionality('on');
+      this.currentState = true;
+    },
+    switchOff() {
+      this.functionality('off');
+      this.currentState = false;
+    },
   },
   computed: {
     breifInfo() {

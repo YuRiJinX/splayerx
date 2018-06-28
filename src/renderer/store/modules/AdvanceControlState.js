@@ -39,7 +39,7 @@ const state = {
         id: 2,
         title: 'Audio',
         redirection: true,
-        redirectionDestination: 'AudioMenu', // 所有此项的值都必须必须一一对应mutation中的方法名！！
+        redirectionDestination: 'AudioMenu', // 所有redirectionDestination的值都必须必须一一对应mutation中的方法名！！
         animation: false,
         functionType: null,
       },
@@ -102,7 +102,50 @@ const state = {
   },
   MediaMenu: {
     MenuName: 'Media Info',
-    Menu: [],
+    Menu: [
+      {
+        id: 0,
+        title: 'File Name',
+        value: 'This file has a very very long name ...',
+        animation: true,
+        functionType: 'Info',
+      },
+      {
+        id: 1,
+        title: 'Duration',
+        value: '1:24:53',
+        animation: true,
+        functionType: 'Info',
+      },
+      {
+        id: 2,
+        title: 'Resolution',
+        value: '1920 x 1080',
+        animation: true,
+        functionType: 'Info',
+      },
+      {
+        id: 3,
+        title: 'Frame Rate',
+        value: '60 fps',
+        animation: true,
+        functionType: 'Info',
+      },
+      {
+        id: 4,
+        title: 'Video Bit Rate',
+        value: '200 mbps',
+        animation: true,
+        functionType: 'Info',
+      },
+      {
+        id: 5,
+        title: 'Container Format',
+        value: 'a$%^&*()',
+        animation: true,
+        functionType: 'Info',
+      },
+    ],
   },
   AudioMenu: {
     MenuName: 'Audio',

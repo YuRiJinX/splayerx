@@ -99,6 +99,7 @@ export default {
     color: black;
     border-radius: 4.8px;
     z-index: 750;
+    -webkit-app-region: no-drag;
   }
 
   .flex-container {
