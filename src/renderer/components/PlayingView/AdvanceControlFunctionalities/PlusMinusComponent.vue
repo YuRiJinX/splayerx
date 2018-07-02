@@ -3,18 +3,18 @@
     <div class="functionality"
       v-if="direction === 'column'">
       <div class="minus-button"
-      @mousedown="minus">
+      @mousedown.stop="minus">
         -
       </div>
       <div class="current-speed">
         {{ currentState }}x
       </div>
       <div class="plus-button"
-       @mousedown="plus">
+       @mousedown.stop="plus">
         +
       </div>
       <div class="reset-button"
-      @mousedown="reset">
+      @mousedown.stop="reset">
         @
       </div>
     </div>

@@ -3,11 +3,11 @@
     <div class="functionality"
       v-if="direction === 'column'">
       <div class="on-button"
-      @mousedown="switchOn">
+      @mousedown.stop="switchOn">
         On
       </div>
       <div class="off-button"
-       @mousedown="switchOff">
+       @mousedown.stop="switchOff">
         Off
       </div>
     </div>
