@@ -23,19 +23,26 @@ function createWindow() {
     useContentSize: true,
     width: 768,
     frame: false,
-    titleBarStyle: 'hiddenInset',
-    transparent: true,
+    titleBarStyle: 'none',
     minWidth: 427,
     minHeight: 240,
     webPreferences: {
       webSecurity: false,
       experimentalFeatures: true,
     },
+
+    // See https://github.com/electron/electron/blob/master/docs/api/browser-window.md#showing-window-gracefully
+    backgroundColor: '#802e2c29',
+    show: false,
   });
 
   mainWindow.loadURL(winURL);
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 }
 

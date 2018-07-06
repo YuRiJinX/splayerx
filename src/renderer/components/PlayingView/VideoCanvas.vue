@@ -271,7 +271,7 @@ export default {
         this.$refs.videoCanvas, 0, 0, videoWidth, videoHeight,
         0, 0, videoWidth, videoHeight,
       );
-      const string = canvas.toDataURL('image/png', landingViewWidth / videoWidth);
+      const imagePath = canvas.toDataURL('image/png', landingViewWidth / videoWidth);
       this.$storage.get('recent-played', (err, data) => {
         if (err) {
           // TODO: proper error handle
@@ -280,8 +280,9 @@ export default {
           const object = data[0];
           const iterator = Object.keys(object).indexOf('path');
           if (iterator !== -1) {
-            object.shortCut = string;
+            object.shortCut = imagePath;
             object.lastPlayedTime = this.currentTime;
+            object.duration = this.$store.state.PlaybackState.Duration;
             data.splice(0, 1);
             data.unshift(object);
             this.$storage.set('recent-played', data);
@@ -326,8 +327,10 @@ export default {
       console.log('toggle-playback event has been triggered');
       if (this.$refs.videoCanvas.paused) {
         this.$bus.$emit('play');
+        this.$bus.$emit('twinkle-play-icon');
       } else {
         this.$bus.$emit('pause');
+        this.$bus.$emit('twinkle-pause-icon');
       }
     });
     this.$bus.$on('play', () => {
