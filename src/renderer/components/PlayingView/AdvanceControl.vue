@@ -1,19 +1,17 @@
 <template>
-  <div :style="menuStyle">
-    <div class="advanced"
+  <div class="advanced">
+    <div class="flex-container"
       v-if="isAcitve">
       <div class="menu-name"
         v-if="currentMenu.MenuName != 'Setting'"
         @mousedown.self="backToPreviousMenu">
         {{ '<' + currentMenu.MenuName }}
       </div>
-      <div class="flex-container">
-        <AdvanceControlMenuItem
-          v-for="item in currentMenu.Menu"
-          :key="item.id"
-          :item="item">
-        </AdvanceControlMenuItem>
-      </div>
+      <AdvanceControlMenuItem
+        v-for="item in currentMenu.Menu"
+        :key="item.title"
+        :item="item">
+      </AdvanceControlMenuItem>
     </div>
     <div class="button"
       @mousedown.stop="switchSettingMenuState">
@@ -33,10 +31,7 @@ export default {
     return {
       menuStyle: {
         position: 'absolute',
-        bottom: '17px',
-        right: '27px',
-        width: '45px',
-        height: '40px',
+
       },
       isAcitve: false,
     };
@@ -53,22 +48,13 @@ export default {
       }
     },
     closeMenu() {
-      this.menuStyle.width = `${45}px`;
-      this.menuStyle.height = `${40}px`;
       this.isAcitve = false;
     },
     openMenu() {
-      this.menuStyle.width = `${208}px`;
-      this.$_fitMenuSize();
       this.isAcitve = true;
     },
     backToPreviousMenu() {
       this.$store.commit('PreviousMenu');
-      this.$_fitMenuSize();
-    },
-    $_fitMenuSize() {
-      this.menuStyle.height = (this.currentMenu.MenuName === 'Setting') ?
-        `${(this.currentMenu.Menu.length * 22) + 120}px` : `${((this.currentMenu.Menu.length + 1) * 22) + 140}px`;
     },
   },
   computed: {
@@ -79,7 +65,6 @@ export default {
   created() {
     this.$bus.$on('changeMenuList', (changedLevel) => {
       this.$store.commit(changedLevel);
-      this.$_fitMenuSize();
     });
   },
 };
@@ -89,32 +74,28 @@ export default {
 .video-controller {
   .advanced {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    backdrop-filter: blur(20px);
-    opacity: 0.3;
-    color: black;
-    border-radius: 4.8px;
+    bottom: 17px;
+    right: 27px;
     z-index: 750;
-    -webkit-app-region: no-drag;
   }
-
   .flex-container {
-    position: absolute;
-    width: 100%;
+    backdrop-filter: blur(20px);
+    background-color: white;
+    opacity: 0.3;
+    height: auto;
     bottom: 45px;
     padding: 10px;
+    padding-bottom: 50px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    color: black;
+    border-radius: 4.8px;
+    -webkit-app-region: no-drag;
   }
 
   .menu-name {
-    position: absolute;
-    width: 100%;
+    width: 188px;
     background-color: white;
     color: black;
   }

@@ -17,12 +17,6 @@ export default {
 <style lang="scss">
 .Info {
   order: 2;
-  .functionality {
-    font-size: 16px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-  }
   .brief-info {
     font-size: 18px;
   }
