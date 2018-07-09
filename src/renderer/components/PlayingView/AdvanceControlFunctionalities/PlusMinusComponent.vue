@@ -1,6 +1,6 @@
 <template>
   <div class="plus-minus">
-    <div class="functionality"
+    <div class="functionality" key="spread"
       v-if="direction === 'column'">
       <div class="minus-button"
       @mousedown.stop="minus">
@@ -18,8 +18,8 @@
         @
       </div>
     </div>
-    <div class="brief-info"
-      v-else-if="direction === 'row'">
+    <div class="brief-info" key="brief"
+      v-else>
       {{ currentState + 'x' }}
     </div>
   </div>
@@ -67,7 +67,6 @@ export default {
   .plus-button:hover, .minus-button:hover, .reset-button:hover {
     cursor: pointer;
   }
-
   .current-speed {
     cursor: default;
     width: 5px;
