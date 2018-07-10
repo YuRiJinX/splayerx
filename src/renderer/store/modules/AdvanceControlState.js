@@ -153,7 +153,11 @@ const state = {
         id: 0,
         title: 'Track',
         redirection: true,
+<<<<<<< HEAD
         animation: false,
+=======
+        animation: true,
+>>>>>>> dbc05e829820dfe14abcb3704fa896ba788f4593
         functionType: 'list',
       },
       {
