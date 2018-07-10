@@ -1,4 +1,3 @@
-
 const state = {
   CurrentMenu: null,
   PreviousMenu: null,
@@ -152,41 +151,17 @@ const state = {
     Menu: [
       {
         id: 0,
-        title: 'Language',
-        redirection: false,
-        animation: true,
-        functionType: 'plusMinus',
+        title: 'Track',
+        redirection: true,
+        animation: false,
+        functionType: 'list',
       },
       {
         id: 1,
-        title: 'Source',
-        redirection: false,
-        animation: true,
-        functionType: 'switch',
-      },
-      {
-        id: 2,
         title: 'Delay',
         redirection: false,
-        animation: false,
-      },
-      {
-        id: 3,
-        title: 'Size',
-        redirection: false,
-        animation: false,
-      },
-      {
-        id: 4,
-        title: 'CustomStyle',
-        redirection: false,
-        animation: false,
-      },
-      {
-        id: 5,
-        title: '2nd Subtitle',
-        redirection: false,
-        animation: false,
+        animation: true,
+        functionType: 'plusMinus',
       },
     ],
   },
