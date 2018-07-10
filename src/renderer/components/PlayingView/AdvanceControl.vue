@@ -21,12 +21,14 @@
 </template>;
 
 <script>
+import AdvanceControlMenuData from '@/mixins/Menu.js';
 import AdvanceControlMenuItem from './AdvanceControlMenuItem.vue';
 
 export default {
   components: {
     AdvanceControlMenuItem,
   },
+  mixins: [AdvanceControlMenuData],
   data() {
     return {
       menuStyle: {
@@ -42,7 +44,7 @@ export default {
       if (this.isAcitve) {
         this.closeMenu();
       } else {
-        this.$store.commit('InitialMenu');
+        this.initialMenu();
         console.log(this.currentMenu);
         this.openMenu();
       }
@@ -54,18 +56,11 @@ export default {
       this.isAcitve = true;
     },
     backToPreviousMenu() {
-      this.$store.commit('PreviousMenu');
-    },
-  },
-  computed: {
-    currentMenu() {
-      return this.$store.state.AdvanceControlState.CurrentMenu;
+      this.toPreviousMenu();
     },
   },
   created() {
-    this.$bus.$on('changeMenuList', (changedLevel) => {
-      this.$store.commit(changedLevel);
-    });
+    this.$bus.$on('changeMenuList', this.changeMenu);
   },
 };
 </script>
