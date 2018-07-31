@@ -242,17 +242,20 @@ export default {
         this.$refs.videoCanvas, 0, 0, videoWidth, videoHeight,
         0, 0, videoWidth, videoHeight,
       );
-      const imagePath = canvas.toDataURL('image/png');
+      const imgDataURL = canvas.toDataURL('image/png');
       let data;
       try {
         data = syncStorage.getSync('recent-played');
       } catch (err) {
         console.error(err);
       }
+
+      const vidName = path.basename(data[0].path, path.extname(data[0].path));
+      const imgFilePath = syncStorage.saveImageSync(vidName, imgDataURL);
       const object = data[0];
       const iterator = Object.keys(object).indexOf('path');
       if (iterator !== -1) {
-        object.shortCut = imagePath;
+        object.screenshotPath = imgFilePath;
         object.lastPlayedTime = this.currentTime;
         object.duration = this.$store.state.PlaybackState.Duration;
         data.splice(0, 1);
@@ -567,6 +570,7 @@ export default {
       this.windowRectangleOld.y = window.getBounds().y;
       this.windowRectangleOld.height = window.getBounds().height;
       this.windowRectangleOld.width = window.getBounds().width;
+      this.$_saveScreenshot();
     },
   },
   created() {

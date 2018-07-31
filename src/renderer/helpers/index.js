@@ -70,7 +70,7 @@ export default {
       asyncStorage.get('recent-played').then((data) => {
         const newElement = {
           path,
-          shortCut: '',
+          screenshotPath: '',
           lastPlayedTime: 0,
           duration: 0,
         };
