@@ -6,7 +6,7 @@
     @mousemove="handleMouseMove">
     <titlebar currentView="LandingView"></titlebar>
     <div class="background"
-      v-if="showShortcutImage">
+      v-if="showScreenshotImage">
       <div class="background background-image">
         <transition name="background-transition" mode="in-out">
           <img
@@ -26,7 +26,7 @@
         / {{ timeInValidForm(timecodeFromSeconds(itemInfo().duration)) }}
       </div>
       <div class="iteminfo item-progress">
-        <div class="progress-played" v-bind:style="{ width: itemInfo().percentage + '%' }"></div>
+        <div class="progress-played" :style="{ width: itemInfo().percentage + '%' }"></div>
       </div>
     </div>
     <div class="logo-container">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="welcome">
-      <div class="title" v-bind:style="$t('css.titleFontSize')">{{ $t("msg.titleName") }}</div>
+      <div class="title" :style="$t('css.titleFontSize')">{{ $t("msg.titleName") }}</div>
       <div class="version">v {{ this.$electron.remote.app.getVersion() }}</div>
     </div>
     <div class="controller">
@@ -44,7 +44,7 @@
           v-for="(item, index) in lastPlayedFile"
           :key="item.path"
           :style="{
-              backgroundImage: itemShortcut(item.shortCut),
+              backgroundImage: itemScreenshot(item.screenshot),
               width: item.chosen ? '140px' : '114px',
               height: item.chosen ? '80px' : '65px',
             }"
@@ -77,7 +77,7 @@ export default {
       isTurnToOdd: false,
       backgroundUrlOdd: '',
       backgroundUrlEven: '',
-      showShortcutImage: false,
+      showScreenshotImage: false,
       isDragging: false,
       mouseDown: false,
       invalidTimeRepresentation: '--',
@@ -114,7 +114,13 @@ export default {
 
     asyncStorage.get('recent-played').then((data) => {
       this.lastPlayedFile = data;
-      console.log(data);
+    }).then(() => {
+      this.lastPlayedFile.forEach((currentItem, index) => {
+        asyncStorage.readImage(currentItem.screenshotPath).then((imgString) => {
+          imgString = `data:image/png;base64, ${imgString}`;
+          this.$set(this.lastPlayedFile[index], 'screenshot', imgString);
+        });
+      });
     }).catch((err) => {
       // TODO: proper error handle
       console.error(err);
@@ -125,8 +131,8 @@ export default {
     }
   },
   methods: {
-    itemShortcut(shortCut) {
-      return `url("${shortCut}")`;
+    itemScreenshot(screenshot) {
+      return `url("${screenshot}")`;
     },
     itemInfo() {
       return {
@@ -142,17 +148,17 @@ export default {
     onRecentItemMouseover(item, index) {
       this.item = item;
       this.$set(this.lastPlayedFile[index], 'chosen', true);
-      if (item.shortCut !== '') {
+      if (item.screenshot !== '') {
         this.isChanging = true;
         this.isTurnToOdd = !this.isTurnToOdd;
         if (this.isTurnToOdd) {
           this.imageTurn = 'odd';
-          this.backgroundUrlOdd = item.shortCut;
+          this.backgroundUrlOdd = item.screenshot;
         } else {
           this.imageTurn = 'even';
-          this.backgroundUrlEven = item.shortCut;
+          this.backgroundUrlEven = item.screenshot;
         }
-        this.showShortcutImage = true;
+        this.showScreenshotImage = true;
       }
     },
     onRecentItemMouseout(index) {
