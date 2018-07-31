@@ -1,4 +1,5 @@
 import storage from 'electron-json-storage';
+import fs from 'fs';
 
 /*
   使用说明：
@@ -25,8 +26,19 @@ function set(key, json) {
     });
   });
 }
-
+function readImage(imgPath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(imgPath, 'base64', (err, imgString) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(imgString);
+      }
+    });
+  });
+}
 export default {
   set,
   get,
+  readImage,
 };

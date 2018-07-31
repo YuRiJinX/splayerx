@@ -13,9 +13,14 @@ const electron = require('electron');
   使用这两个同步函数！！！！
 
 */
-function getFileName(key) {
+// return electron'userData'/storage
+function getDefaultPath() {
   const app = electron.remote.app || electron.app;
-  const defaultPath = path.join(app.getPath('userData'), 'storage');
+  return path.join(app.getPath('userData'), 'storage');
+}
+// return electron'userData'/storage/key
+function getFileName(key) {
+  const defaultPath = getDefaultPath();
 
   if (!key) {
     throw Error('Missing key');
@@ -71,10 +76,27 @@ function setSync(key, json) {
   } finally {
     fs.writeFileSync(filename, data);
   }
-
   return 1;
+}
+function saveImageSync(videoName, imgData) {
+  const defaultPath = getDefaultPath();
+  const videoDir = path.join(defaultPath, videoName);
+  const imageFileName = path.join(videoDir, 'screenshot.png');
+  const base64Data = imgData.replace(/^data:image\/\w+;base64,/, '');
+  const dataBuffer = Buffer.from(base64Data, 'base64');
+  try {
+    fs.mkdirSync(videoDir);
+  } catch (err) {
+    if (err.code === 'EEXIST') {
+      console.log('directory already exist');
+    }
+  } finally {
+    fs.writeFileSync(imageFileName, dataBuffer, 'base64');
+  }
+  return imageFileName;
 }
 export default {
   getSync,
   setSync,
+  saveImageSync,
 };
