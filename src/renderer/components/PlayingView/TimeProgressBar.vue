@@ -218,7 +218,7 @@ export default {
       }
       if (this.timeoutIdOfScreenshotAppearDelay === 0) {
         this.timeoutIdOfScreenshotAppearDelay
-          = setTimeout(() => { this.showScreenshot = true; }, 350);
+          = setTimeout(() => { this.showScreenshot = true; }, 200);
       }
     },
     /**
