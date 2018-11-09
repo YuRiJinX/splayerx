@@ -12,8 +12,10 @@
     @dblclick="handleDblclick">
     <titlebar currentView="Playingview" v-hidden="displayState['titlebar']" ></titlebar>
     <notification-bubble/>
+    <transition name="translate">
     <recent-playlist class="recent-playlist" :showAttached="widgetsStatus['playlist-control'].showAttached"
-    v-show="widgetsStatus['playlist-control'].showAttached"></recent-playlist>
+    v-show="widgetsStatus['playlist-control'].showAttached"/>
+    </transition>
     <div class="masking" v-hidden="showAllWidgets"></div>
     <play-button />
     <base-invisible-background v-show="!mute" />
@@ -558,6 +560,13 @@ export default {
       height: 50px;
     }
   }
+}
+.translate-enter-active, .translate-leave-active {
+  transition: opacity 400ms cubic-bezier(0.2, 0.3, 0.01, 1), transform 400ms cubic-bezier(0.2, 0.3, 0.01, 1);
+}
+.translate-enter, .translate-leave-to {
+  opacity: 0;
+  transform: translateY(100px);
 }
 .fade-in {
   visibility: visible;
