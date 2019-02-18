@@ -21,7 +21,9 @@
     @conflict-resolve="conflictResolve"
     @update:playlistcontrol-showattached="updatePlaylistShowAttached"/>
     <div class="masking" v-fade-in="showAllWidgets"/>
-    <play-button :paused="paused" />
+    <play-button class="play-button no-drag"
+      :showAllWidgets="showAllWidgets" :isFocused="isFocused"
+      :paused="paused" :attachedShown="attachedShown"/>
     <volume-indicator :showAllWidgets="showAllWidgets" />
     <div class="control-buttons" v-fade-in="showAllWidgets">
       <playlist-control class="button playlist" v-fade-in="displayState['playlist-control']" v-bind.sync="widgetsStatus['playlist-control']"/>
@@ -37,8 +39,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
-import { Input as inputMutations } from '@/store/mutationTypes';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import { Input as inputActions } from '@/store/actionTypes';
 import Titlebar from '../Titlebar.vue';
 import PlayButton from './PlayButton.vue';
@@ -100,13 +101,13 @@ export default {
   },
   computed: {
     ...mapState({
-      currentWidget: state => state.Input.mousemoveTarget,
-      currentMouseupWidget: state => state.Input.mouseupTarget,
-      currentMousedownWidget: state => state.Input.mousedownTarget,
-      mousemovePosition: state => state.Input.mousemovePosition,
+      currentWidget: ({ Input }) => Input.mousemoveComponentName,
+      currentMouseupWidget: state => state.Input.mouseupComponentName,
+      currentMousedownWidget: state => state.Input.mousedownComponentName,
+      mousemovePosition: state => state.Input.mousemoveClientPosition,
       wheelTime: state => state.Input.wheelTimestamp,
     }),
-    ...mapGetters(['paused', 'duration', 'leftMousedown', 'ratio', 'playingList', 'originSrc', 'isFocused']),
+    ...mapGetters(['paused', 'duration', 'leftMousedown', 'ratio', 'playingList', 'originSrc', 'isFocused', 'isMinimized']),
     onlyOneVideo() {
       return this.playingList.length === 1;
     },
@@ -151,9 +152,14 @@ export default {
         this.lastDragging = true;
       }
     },
-    isFocused(newValue, oldValue) {
-      if (!oldValue && newValue) {
+    isFocused(newVal) {
+      if (!newVal) {
         this.isValidClick = false;
+      }
+    },
+    isMinimized(newVal, oldVal) {
+      if (!newVal && oldVal) {
+        this.isValidClick = true;
       }
     },
     currentWidget(newVal, oldVal) {
@@ -194,11 +200,8 @@ export default {
     document.addEventListener('wheel', this.handleWheel);
   },
   methods: {
-    ...mapMutations({
-      updateMousemoveTarget: inputMutations.MOUSEMOVE_TARGET_UPDATE,
-    }),
     ...mapActions({
-      updateMousemovePosition: inputActions.MOUSEMOVE_POSITION,
+      updateMousemove: inputActions.MOUSEMOVE_UPDATE,
       updateMousedown: inputActions.MOUSEDOWN_UPDATE,
       updateMouseup: inputActions.MOUSEUP_UPDATE,
       updateKeydown: inputActions.KEYDOWN_UPDATE,
@@ -332,8 +335,10 @@ export default {
       this.mouseStoppedId = this.clock.setTimeout(() => {
         this.mouseStopped = true;
       }, this.mousestopDelay);
-      this.updateMousemovePosition([clientX, clientY]);
-      this.updateMousemoveTarget(this.getComponentName(target));
+      this.updateMousemove({
+        componentName: this.getComponentName(target),
+        clientPosition: [clientX, clientY],
+      });
     },
     handleMouseenter() {
       this.mouseLeftWindow = false;
@@ -343,11 +348,11 @@ export default {
     },
     handleMousedown(event) {
       const { target, buttons } = event;
-      this.updateMousedown({ target: this.getComponentName(target), buttons });
+      this.updateMousedown({ componentName: this.getComponentName(target), buttons });
     },
     handleMouseup(event) {
       const { target, buttons } = event;
-      this.updateMouseup({ target: this.getComponentName(target), buttons });
+      this.updateMouseup({ componentName: this.getComponentName(target), buttons });
     },
     handleMouseleave() {
       this.mouseLeftId = this.clock.setTimeout(() => {
@@ -359,46 +364,42 @@ export default {
     },
     handleMouseupLeft() {
       this.isMousemove = false;
-      this.isMousedown = false;
+      this.isValidClick = true;
       this.clicks += 1;
       if (this.clicksTimer) {
         clearTimeout(this.clicksTimer);
       }
-      if (this.lastDragging && this.lastAttachedShowing) {
+      // 这里的事件监听和progress-bar里面document.mouseup 事件有冲突
+      // 需要mouse down来记录是否是组件内部事件处理
+      if ((this.lastDragging && this.lastAttachedShowing) || !this.isMousedown) {
         this.clicks = 0;
         return;
       }
+      this.isMousedown = false;
       if (this.clicks === 1) {
         this.clicksTimer = setTimeout(() => {
           this.clicks = 0;
-          const attachedShowing = this.lastAttachedShowing;
-          if (
-            this.currentMousedownWidget === 'the-video-controller' &&
-            this.currentMouseupWidget === 'the-video-controller' && !attachedShowing && !this.lastDragging && this.isValidClick) {
-            this.togglePlayback();
-          }
-          this.isValidClick = true;
           this.lastDragging = false;
           this.lastAttachedShowing = this.widgetsStatus['subtitle-control'].showAttached || this.widgetsStatus['advance-control'].showAttached || this.widgetsStatus['playlist-control'].showAttached;
         }, this.clicksDelay);
       } else if (this.clicks === 2) {
         clearTimeout(this.clicksTimer);
         this.clicks = 0;
-        if (this.currentMouseupWidget === 'the-video-controller' && this.isValidClick) {
+        if (this.currentMouseupWidget === 'the-video-controller') {
           this.toggleFullScreenState();
         }
       }
     },
     handleKeydown({ code }) {
-      this.updateKeydown(code);
+      this.updateKeydown({ pressedKeyboardCode: code });
     },
     handleKeyup({ code }) {
-      this.updateKeyup(code);
+      this.updateKeyup({ releasedKeyboardCode: code });
     },
-    handleWheel(event) {
+    handleWheel({ target, timeStamp }) {
       this.updateWheel({
-        target: this.getComponentName(event.target),
-        timestamp: event.timeStamp,
+        componentName: this.getComponentName(target),
+        timestamp: timeStamp,
       });
     },
     // Helper functions
@@ -453,9 +454,6 @@ export default {
     toggleFullScreenState() {
       this.$bus.$emit('toggle-fullscreen');
     },
-    togglePlayback() {
-      this.$bus.$emit('toggle-playback');
-    },
   },
 };
 </script>
@@ -470,6 +468,18 @@ export default {
   opacity: 1;
   transition: opacity 400ms;
   z-index: auto;
+}
+.play-button {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
 }
 .masking {
   position: absolute;
@@ -541,6 +551,10 @@ export default {
   .control-buttons {
     display: none;
   }
+  .play-button {
+    width: 54px;
+    height: 54px;
+  }
 }
 @media screen and (max-aspect-ratio: 1/1) and (min-width: 289px) and (max-width: 480px), screen and (min-aspect-ratio: 1/1) and (min-height: 289px) and (max-height: 480px) {
   .control-buttons {
@@ -552,6 +566,10 @@ export default {
       width: 26.4px;
       height: 22px;
     }
+  }
+  .play-button {
+    width: 67px;
+    height: 67px;
   }
 }
 @media screen and (max-aspect-ratio: 1/1) and (min-width: 481px) and (max-width: 1080px), screen and (min-aspect-ratio: 1/1) and (min-height: 481px) and (max-height: 1080px) {
@@ -565,6 +583,10 @@ export default {
       height: 32px;
     }
   }
+  .play-button {
+    width: 93px;
+    height: 93px;
+  }
 }
 @media screen and (max-aspect-ratio: 1/1) and (min-width: 1080px), screen and (min-aspect-ratio: 1/1) and (min-height: 1080px) {
   .control-buttons {
@@ -576,6 +598,10 @@ export default {
       width: 60px;
       height: 50px;
     }
+  }
+  .play-button {
+    width: 129px;
+    height: 129px;
   }
 }
 .fade-in {
