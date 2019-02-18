@@ -153,7 +153,7 @@ function registerMainWindowEvent() {
     }
     const ratio = snapShot.videoWidth / snapShot.videoHeight;
     snapShot.videoHeight = 1080;
-    snapShot.videoWidth = ratio * 1080;
+    snapShot.videoWidth = Math.round(ratio * 1080);
 
     splayerx.snapshotVideo(
       snapShot.videoPath, snapShot.imgPath, numberString, `${snapShot.videoWidth}`, `${snapShot.videoHeight}`,
@@ -177,7 +177,12 @@ function registerMainWindowEvent() {
     const maxWaitingCount = 40;
     let waitingCount = 0;
     const callback = (resultCode, imgPath) => {
-      if (resultCode === 'Waiting for the task completion.') {
+      const lastFrameIndex = snapShotQueue.findIndex(element => element.type === 'lastFrame');
+      if (lastFrameIndex > 0) { // if lastFrameIndex is -1 && 0 , then do other actions
+        const lastFrame = snapShotQueue.splice(lastFrameIndex, 1);
+        snapShotQueue.unshift(lastFrame[0]);
+        snapShot(snapShotQueue[0], callback);
+      } else if (resultCode === 'Waiting for the task completion.') {
         waitingCount += 1;
         if (waitingCount < maxWaitingCount) {
           snapShot(snapShotQueue[0], callback);
@@ -190,16 +195,11 @@ function registerMainWindowEvent() {
         }
       } else if (resultCode === '0') {
         const lastRecord = snapShotQueue.shift();
-        const lastFrameIndex = snapShotQueue.findIndex(element => element.type === 'lastFrame');
-        if (lastFrameIndex !== -1) {
-          const lastFrame = snapShotQueue.splice(lastFrameIndex, 1);
-          snapShotQueue.unshift(lastFrame[0]);
-        }
         if (event.sender.isDestroyed()) {
           snapShotQueue.splice(0, snapShotQueue.length);
         } else {
           event.sender.send(`snapShot-${lastRecord.videoPath}-reply`, imgPath);
-          if (snapShotQueue.length > 0) {
+          if (snapShotQueue.length > 0 && lastFrameIndex !== 0) {
             snapShot(snapShotQueue[0], callback);
           }
         }
