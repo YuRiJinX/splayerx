@@ -151,6 +151,10 @@ function registerMainWindowEvent() {
     } else {
       numberString = timecodeFromSeconds(snapShot.time);
     }
+    const ratio = snapShot.videoWidth / snapShot.videoHeight;
+    snapShot.videoHeight = 1080;
+    snapShot.videoWidth = ratio * 1080;
+
     splayerx.snapshotVideo(
       snapShot.videoPath, snapShot.imgPath, numberString, `${snapShot.videoWidth}`, `${snapShot.videoHeight}`,
       (resultCode) => {
@@ -170,9 +174,20 @@ function registerMainWindowEvent() {
   }
 
   function snapShotQueueProcess(event) {
+    const maxWaitingCount = 40;
+    let waitingCount = 0;
     const callback = (resultCode, imgPath) => {
       if (resultCode === 'Waiting for the task completion.') {
-        snapShot(snapShotQueue[0], callback);
+        waitingCount += 1;
+        if (waitingCount < maxWaitingCount) {
+          snapShot(snapShotQueue[0], callback);
+        } else {
+          snapShotQueue.shift();
+          waitingCount = 0;
+          if (snapShotQueue.length) {
+            snapShot(snapShotQueue[0], callback);
+          }
+        }
       } else if (resultCode === '0') {
         const lastRecord = snapShotQueue.shift();
         const lastFrameIndex = snapShotQueue.findIndex(element => element.type === 'lastFrame');
@@ -190,7 +205,7 @@ function registerMainWindowEvent() {
         }
       } else {
         snapShotQueue.shift();
-        if (snapShotQueue.length) {
+        if (snapShotQueue.length > 0) {
           snapShot(snapShotQueue[0], callback);
         }
       }
