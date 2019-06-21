@@ -18,6 +18,12 @@ export interface IPlayInfoStorable {
    */
   updateRecentPlayedBy(playListID: number, items: PlaylistItem): Promise<boolean>
   /**
+   * @param  {string} paths
+   * @returns {Promise<number>} 返回playlistId
+   * @description 根据所给paths创建相应的mediaitem[]，并创建一个包含他们的playlistitem
+   */
+  addRecentPlayedBy(paths: string[]): Promise<number>
+  /**
    * @description 删除播放列表
    * @author tanghaixiang
    * @param {number} playListID 播放列表ID

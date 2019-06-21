@@ -1,7 +1,8 @@
 import { IPlayInfoStorable } from "@/interfaces/IPlayInfoStorable";
 import { info, data } from "@/libs/DataBase";
-import { MediaItem, PlaylistItem } from "@/interfaces/IDB";
+import { MediaItem, PlaylistItem, RawPlaylistItem } from "@/interfaces/IDB";
 import { VIDEO_OBJECT_STORE_NAME, RECENT_OBJECT_STORE_NAME } from "@/constants";
+import { mediaQuickHash } from "@/libs/utils";
 
 export default class PlayInfoStorageService implements IPlayInfoStorable {
   /**
@@ -65,6 +66,9 @@ export default class PlayInfoStorageService implements IPlayInfoStorable {
     } catch (error) {
       return false;
     }
+  }
+  async addRecentPlayedBy(paths: string[]): Promise<number> {
+    return 0;
   }
   async getAllRecentPlayed(): Promise<PlaylistItem[]> {
     const results = await info.getAll('recent-played');
