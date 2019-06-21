@@ -25,7 +25,7 @@ export default class DataBase implements IDB {
   async getValueByKey(objectStore: string, key: number): Promise<any | undefined> {
     return this.db.get(objectStore, key);
   }
-  async getValueByIndex(objectStore: string, index: string, value: string | number): Promise<any | undefined> {
+  async getValueByIndex(objectStore: string, index: string, value: any): Promise<any | undefined> {
     return this.db.get(objectStore, index, value);
   }
   async getAllValueByIndex(objectStore: string, index: string, value: string | number): Promise<any[]> {
