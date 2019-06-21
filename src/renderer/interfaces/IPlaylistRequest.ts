@@ -1,5 +1,11 @@
 import { MediaItem } from '@/interfaces/IDB';
 
+export type PlaylistDisplayInfo = {
+  backgroundUrl: string,
+  percentage: number,
+  parsedName: number,
+};
+
 export interface IPlaylistRequest {
   coverSrc: string;
   duration: any;

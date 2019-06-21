@@ -6,7 +6,7 @@ import { mediaQuickHash } from "@/libs/utils";
 import { info } from '@/libs/DataBase';
 import { MediaItem } from '@/interfaces/IDB';
 
-export default class PlaylistService implements IPlaylistRequest {
+export default class PlaylistItemService implements IPlaylistRequest {
   coverSrc: string;
   duration: any;
   record: MediaItem;
@@ -80,4 +80,8 @@ export default class PlaylistService implements IPlaylistRequest {
       }
     }
   }
+}
+class PlaylistService {
+  playlistItems: PlaylistDisplayInfo[];
+  
 }
